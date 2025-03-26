@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Optimize and compress your images online with adjustable quality settings. Fully responsive and SEO-optimized.">
+    <title>Image Compression Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        .output { margin-top: 20px; }
+        img { max-width: 100%; height: auto; margin: 10px 0; }
+        .adsense { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Image Compression Tool</h1>
+        <input type="file" id="fileInput" multiple accept="image/*"><br><br>
+        <label for="quality">Compression Level (1-100):</label>
+        <input type="range" id="quality" min="1" max="100" value="80"><br><br>
+        <button onclick="compressImages()">Compress Images</button>
+        <div class="output" id="output"></div>
+        
+        <!-- Google AdSense Placeholder -->
+        <div class="adsense">
+            <p>Advertisement</p>
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <ins class="adsbygoogle" style="display:block" data-ad-client="YOUR-ADSENSE-ID" data-ad-slot="YOUR-AD-SLOT" data-ad-format="auto"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+    
+    <script>
+        function compressImages() {
+            const files = document.getElementById('fileInput').files;
+            const quality = document.getElementById('quality').value / 100;
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = '';
+
+            if (!files.length) {
+                alert("Please select images.");
+                return;
+            }
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0, img.width, img.height);
+                        
+                        canvas.toBlob(blob => {
+                            const compressedUrl = URL.createObjectURL(blob);
+                            const compressedImg = document.createElement('img');
+                            compressedImg.src = compressedUrl;
+                            outputDiv.appendChild(compressedImg);
+                            
+                            const downloadLink = document.createElement('a');
+                            downloadLink.href = compressedUrl;
+                            downloadLink.download = 'compressed-' + file.name;
+                            downloadLink.innerText = 'Download';
+                            outputDiv.appendChild(downloadLink);
+                            outputDiv.appendChild(document.createElement('br'));
+                        }, 'image/jpeg', quality);
+                    };
+                };
+            });
+        }
+    </script>
+</body>
+</html>
